@@ -25,12 +25,10 @@ const AdminPanel = () => {
     try {
       await api.put(`/usuarios/${id}/hacer-admin`, { esAdmin: !esAdmin });
 
-      // Actualizar la lista local
       setUsuarios((prev) =>
         prev.map((u) => (u.id === id ? { ...u, esAdmin: !esAdmin } : u))
       );
 
-      // Si el usuario cambiado es el que está logueado, actualiza su estado
       if (usuario.email === email) {
         const actualizado = { ...usuario, esAdmin: !esAdmin };
         localStorage.setItem("usuario", JSON.stringify(actualizado));

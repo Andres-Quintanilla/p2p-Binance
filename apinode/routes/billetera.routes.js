@@ -6,6 +6,5 @@ module.exports = app => {
     router.get("/:monedaId", requireUser, billeteraController.obtenerPorMoneda);
     router.put("/:id/saldo", requireUser, billeteraController.actualizarSaldo);
     router.get("/", requireUser, billeteraController.listar);
-   // router.get("/:id", requireUser, billeteraController.detalle);
     app.use("/billeteras", router);
 };

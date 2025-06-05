@@ -3,15 +3,31 @@ const { Op, where } = require("sequelize");
 
 exports.crear = async (req, res) => {
     const usuario = res.locals.usuario;
-    const { tipo, precioUnitario, cantidadDisponible, descripcionPago, imagenPago, monedaId } = req.body
+    const { tipo, precioUnitario, cantidadDisponible, descripcionPago, imagenPago, monedaId } = req.body;
 
-    if(!tipo || !precioUnitario || !cantidadDisponible || !monedaId){
-        return res.status(400).send(
-            {message: "Faltan datos obligatorios"}
-        );
+    if (!tipo || !precioUnitario || !cantidadDisponible || !monedaId) {
+        return res.status(400).send({ message: "Faltan datos obligatorios" });
     }
 
     try {
+        if (tipo === 'venta') {
+            const billetera = await db.billetera.findOne({
+                where: {
+                    usuarioId: usuario.id,
+                    monedaId
+                }
+            });
+
+            if (!billetera || billetera.saldo < cantidadDisponible) {
+                return res.status(400).send({
+                    message: "Saldo insuficiente para crear el anuncio de venta"
+                });
+            }
+
+            billetera.saldo -= cantidadDisponible;
+            await billetera.save();
+        }
+
         const anuncio = await db.anuncio.create({
             tipo,
             precioUnitario,
@@ -24,12 +40,12 @@ exports.crear = async (req, res) => {
 
         res.status(201).send(anuncio);
 
-    }catch (error){
-        res.status(500).send(
-            {message: "Error al crear el anuncio"}
-        );
-    }    
+    } catch (error) {
+        console.error("Error al crear anuncio:", error);
+        res.status(500).send({ message: "Error al crear el anuncio" });
+    }
 };
+
 
 exports.listar = async (req, res) => {
     const tipo = req.query.tipo;

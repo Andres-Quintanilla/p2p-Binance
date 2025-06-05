@@ -1,11 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const fileUpload = require('express-fileupload');
-const db = require("./models");
+const cors = require('cors');
+
 
 const app = express();
 const port = 3000;
+const db = require("./models");
+
 
 app.use(cors({
     origin: ['http://localhost:5173'],
@@ -13,16 +15,18 @@ app.use(cors({
 }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use('/uploads', express.static('uploads'));
 app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 }
 }));
 
-requires("./routes")(app);
-
-db.sequelize.sync().then(() => {
+db.sequelize.sync({
+     // force: true // drop tables and recreate
+}).then(() => {
     console.log("Base de datos sincronizada");
 });
 
+require("./routes")(app);
 app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);
 });

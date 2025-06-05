@@ -1,4 +1,4 @@
-const {DataTypes} = require('sequelize');
+const {DataTypes} = require("sequelize");
 
 module.exports = (sequelize) => {
     const Moneda = sequelize.define("Moneda",{
@@ -9,7 +9,10 @@ module.exports = (sequelize) => {
         },
         valorEnSus:{
             type: DataTypes.FLOAT,
-            allowNull: false
+            allowNull: false,
+            validate:{
+                min: 0.0001
+            }
         }
     });
     return Moneda;

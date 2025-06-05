@@ -3,32 +3,39 @@ import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
 const AdminPanel = () => {
-  const { usuario } = useAuth();
+  const { usuario, setUsuario } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
   const [mensaje, setMensaje] = useState("");
 
-  useEffect(() => {
-    const fetchUsuarios = async () => {
-      try {
-        const res = await api.get("/usuarios");
-        setUsuarios(res.data);
-      } catch (error) {
-        console.error("Error al obtener usuarios:", error);
-        setMensaje("Error al cargar los usuarios");
-      }
-    };
+  const fetchUsuarios = async () => {
+    try {
+      const res = await api.get("/usuarios");
+      setUsuarios(res.data);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+      setMensaje("Error al cargar los usuarios");
+    }
+  };
 
+  useEffect(() => {
     fetchUsuarios();
   }, []);
 
-  const cambiarRol = async (id, esAdmin) => {
+  const cambiarRol = async (id, esAdmin, email) => {
     try {
       await api.put(`/usuarios/${id}/hacer-admin`, { esAdmin: !esAdmin });
+
+      // Actualizar la lista local
       setUsuarios((prev) =>
-        prev.map((u) =>
-          u.id === id ? { ...u, esAdmin: !esAdmin } : u
-        )
+        prev.map((u) => (u.id === id ? { ...u, esAdmin: !esAdmin } : u))
       );
+
+      // Si el usuario cambiado es el que está logueado, actualiza su estado
+      if (usuario.email === email) {
+        const actualizado = { ...usuario, esAdmin: !esAdmin };
+        localStorage.setItem("usuario", JSON.stringify(actualizado));
+        setUsuario(actualizado);
+      }
     } catch (error) {
       console.error("Error al cambiar rol:", error);
       setMensaje("Error al cambiar el rol del usuario");
@@ -59,7 +66,7 @@ const AdminPanel = () => {
               <td>
                 <button
                   className="btn btn-sm btn-primary"
-                  onClick={() => cambiarRol(u.id, u.esAdmin)}
+                  onClick={() => cambiarRol(u.id, u.esAdmin, u.email)}
                 >
                   Cambiar a {u.esAdmin ? "Usuario" : "Administrador"}
                 </button>

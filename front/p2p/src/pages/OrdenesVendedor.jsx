@@ -76,10 +76,12 @@ const OrdenesVendedor = () => {
               />
             </div>
           )}
-          <div className="mt-2">
-            <button className="btn btn-success me-2" onClick={() => handleAccion(orden.id, "confirmar")}>Confirmar</button>
-            <button className="btn btn-danger" onClick={() => handleAccion(orden.id, "cancelar")}>Cancelar</button>
-          </div>
+          {orden.estado === "pendiente" && (
+            <div className="mt-2">
+              <button className="btn btn-success me-2" onClick={() => handleAccion(orden.id, "confirmar")}>Confirmar</button>
+              <button className="btn btn-danger" onClick={() => handleAccion(orden.id, "cancelar")}>Cancelar</button>
+            </div>
+          )}
         </div>
       ))}
     </div>

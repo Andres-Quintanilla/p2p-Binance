@@ -35,7 +35,7 @@ const CrearAnuncioVenta = () => {
         descripcionPago,
       });
       setMensaje("Anuncio de venta creado exitosamente");
-      setTimeout(() => navigate("/ventas"), 1500);
+      setTimeout(() => navigate("/mis-anuncios"), 1500);
     } catch (error) {
       console.error("Error al crear anuncio de venta:", error);
       setMensaje("Error al crear el anuncio de venta");

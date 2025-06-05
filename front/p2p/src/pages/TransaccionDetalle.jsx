@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 
-const Comprar = () => {
+const TransaccionDetalle = () => {
   const { anuncioId } = useParams();
   const [anuncio, setAnuncio] = useState(null);
   const [mensaje, setMensaje] = useState("");
@@ -90,4 +90,4 @@ const Comprar = () => {
   );
 };
 
-export default Comprar;
+export default TransaccionDetalle;

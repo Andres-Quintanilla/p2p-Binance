@@ -54,6 +54,16 @@ exports.comprar = async (req, res) => {
       return res.status(400).send({ message: "El anuncio no es válido para compra" });
     }
 
+    // Verificamos si ya existe una transacción pendiente igual
+    const existe = await db.transaccion.findOne({
+      where: {
+        anuncioId,
+        usuarioCompradorId: usuario.id,
+        estado: "pendiente",
+      },
+    });
+    if (existe) return res.status(200).send(existe);
+
     const transaccion = await db.transaccion.create({
       tipo: "compra",
       monto: anuncio.cantidadDisponible,
@@ -80,6 +90,15 @@ exports.vender = async (req, res) => {
     if (!anuncio || anuncio.tipo !== "compra") {
       return res.status(400).send({ message: "El anuncio no es válido para venta" });
     }
+
+    const existe = await db.transaccion.findOne({
+      where: {
+        anuncioId,
+        usuarioVendedorId: usuario.id,
+        estado: "pendiente",
+      },
+    });
+    if (existe) return res.status(200).send(existe);
 
     const transaccion = await db.transaccion.create({
       tipo: "venta",
@@ -135,10 +154,7 @@ exports.obtenerPendientesVendedor = async (req, res) => {
       },
       include: [
         { model: db.usuario, as: "usuarioComprador", attributes: ["email"] },
-        {
-          model: db.anuncio,
-          include: [db.moneda],
-        },
+        { model: db.anuncio, include: [db.moneda] },
       ],
     });
 
@@ -153,17 +169,12 @@ exports.obtenerPendientesComprador = async (req, res) => {
   const usuario = res.locals.usuario;
   try {
     const pendientes = await db.transaccion.findAll({
-      where: {
-        usuarioCompradorId: usuario.id,
-      },
+      where: { usuarioCompradorId: usuario.id },
       include: [
         { model: db.usuario, as: "usuarioVendedor", attributes: ["email"] },
-        {
-          model: db.anuncio,
-          include: [db.moneda],
-        },
+        { model: db.anuncio, include: [db.moneda] },
       ],
-      order: [['createdAt', 'DESC']]
+      order: [["createdAt", "DESC"]],
     });
 
     res.send(pendientes);
@@ -172,7 +183,6 @@ exports.obtenerPendientesComprador = async (req, res) => {
     res.status(500).send({ message: "Error al obtener transacciones del comprador" });
   }
 };
-
 
 exports.confirmarTransaccion = async (req, res) => {
   const usuario = res.locals.usuario;
@@ -217,20 +227,6 @@ exports.confirmarTransaccion = async (req, res) => {
     transaccion.billeteraOrigenId = billeteraOrigen.id;
     transaccion.billeteraDestinoId = billeteraDestino.id;
     await transaccion.save();
-
-    await db.transaccion.create({
-        tipo: "compra",
-        monto: transaccion.monto,
-        estado: "completada",
-        descripcionPago: transaccion.descripcionPago,
-        imagenComprobante: transaccion.imagenComprobante,
-        usuarioCompradorId: transaccion.usuarioCompradorId,
-        usuarioVendedorId: transaccion.usuarioVendedorId,
-        anuncioId: transaccion.anuncioId,
-        billeteraOrigenId: billeteraOrigen.id,
-        billeteraDestinoId: billeteraDestino.id
-    });
-
 
     res.send({ message: "Transacción confirmada y fondos liberados" });
   } catch (error) {
@@ -286,17 +282,12 @@ exports.obtenerTodasVendedor = async (req, res) => {
   const usuario = res.locals.usuario;
   try {
     const ordenes = await db.transaccion.findAll({
-      where: {
-        usuarioVendedorId: usuario.id
-      },
+      where: { usuarioVendedorId: usuario.id },
       include: [
         { model: db.usuario, as: "usuarioComprador", attributes: ["email"] },
-        {
-          model: db.anuncio,
-          include: [db.moneda],
-        },
+        { model: db.anuncio, include: [db.moneda] },
       ],
-      order: [['createdAt', 'DESC']]
+      order: [["createdAt", "DESC"]],
     });
 
     res.send(ordenes);

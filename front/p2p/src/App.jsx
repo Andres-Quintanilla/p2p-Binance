@@ -10,9 +10,9 @@ import CrearAnuncioCompra from './pages/CrearAnuncioCompra';
 import CrearAnuncioVenta from './pages/CrearAnuncioVenta';
 import Navbar from './components/Navbar';
 import AnunciosCompra from './pages/AnunciosCompra';
-import AnunciosVenta from './pages/AnuncioVenta';
+import AnunciosVenta from './pages/AnunciosVenta';
 import MisAnuncios from './pages/MisAnuncios';
-import Comprar from './pages/Comprar';
+import TransaccionDetalle from './pages/TransaccionDetalle';
 import OrdenesComprador from './pages/OrdenesComprador';
 import OrdenesVendedor from './pages/OrdenesVendedor';
 
@@ -106,7 +106,7 @@ const App = () => {
           path="/comprar/:anuncioId"
           element={
             <RutaPrivada>
-              <Comprar />
+              <TransaccionDetalle />
             </RutaPrivada>
           }
         />

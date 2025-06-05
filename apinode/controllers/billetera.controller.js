@@ -15,52 +15,54 @@ exports.listar = async (req, res) => {
   }
 };
 
-exports.detalle = async (req, res) => {
-  const monedaId = req.params.id;
+exports.obtenerPorMoneda = async (req, res) => {
   const usuario = res.locals.usuario;
+  const monedaId = req.params.monedaId;
 
   try {
     let billetera = await db.billetera.findOne({
       where: {
+        usuarioId: usuario.id,
         monedaId,
-        usuarioId: usuario.id
       },
-      include: [
-        { model: db.moneda },
-        {
-          model: db.transaccion,
-          as: "Transaccions", 
-          required: false
-        }
-      ]
+      include: [db.moneda],
     });
 
     if (!billetera) {
-      billetera = await db.billetera.create({
-        usuarioId: usuario.id,
-        monedaId,
-        saldo: 0
-      });
-
-      billetera = await db.billetera.findOne({
-        where: { id: billetera.id },
-        include: [
-          { model: db.moneda },
-          {
-            model: db.transaccion,
-            as: "Transaccions",
-            required: false
-          }
-        ]
-      });
+      billetera = await db.billetera.create({ usuarioId: usuario.id, monedaId, saldo: 0 });
+      await billetera.reload({ include: [db.moneda] });
     }
 
-    res.send(billetera);
+    const transacciones = await db.transaccion.findAll({
+      where: {
+        [db.Sequelize.Op.or]: [
+          { billeteraOrigenId: billetera.id },
+          { billeteraDestinoId: billetera.id },
+        ],
+        estado: 'completada',
+      },
+      order: [['createdAt', 'DESC']],
+    });
+
+    const movimientos = transacciones.map(tx => {
+      const esSalida = tx.billeteraOrigenId === billetera.id;
+      const tipoMovimiento = esSalida ? 'ENVÍO' : 'RECIBIDO';
+      const tipo = tx.tipo.toUpperCase();
+      return {
+        id: tx.id,
+        tipo: `${tipoMovimiento} - ${tipo}`,
+        monto: tx.monto,
+        estado: tx.estado
+      };
+    });
+
+    res.send({ ...billetera.toJSON(), movimientos });
   } catch (error) {
-    console.error("Error en detalle billetera:", error);
-    res.status(500).send({ message: "Error al obtener el detalle de la billetera" });
+    console.error(error);
+    res.status(500).send({ message: "Error al obtener la billetera" });
   }
 };
+
 
 exports.actualizarSaldo = async (req, res) => {
   try {

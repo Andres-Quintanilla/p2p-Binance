@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
-import Inicio from './pages/Inicio';
 import AdminMonedas from './pages/AdminMonedas';
 import AdminPanel from './pages/AdminPanel';
 import SeleccionarMoneda from './pages/SeleccionarMoneda';
@@ -31,14 +30,6 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
-        <Route
-          path="/"
-          element={
-            <RutaPrivada>
-              <Inicio />
-            </RutaPrivada>
-          }
-        />
         <Route
           path="/admin/monedas"
           element={
@@ -104,9 +95,11 @@ const App = () => {
           }
         />
         <Route 
-          path='/mis-anuncios'
+          path="/mis-anuncios"
           element={
-            <MisAnuncios/>
+            <RutaPrivada>
+              <MisAnuncios />
+            </RutaPrivada>
           }
         />
         <Route 
@@ -133,7 +126,7 @@ const App = () => {
             </RutaPrivada>
           } 
         />
-
+        <Route path="/" element={<Navigate to="/monedas" replace />} />
       </Routes>
     </Router>
   );

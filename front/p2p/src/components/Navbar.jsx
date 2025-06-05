@@ -13,7 +13,7 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-3">
       <div className="container-fluid">
-        <Link className="navbar-brand fw-bold text-warning" to="/">
+        <Link className="navbar-brand fw-bold text-warning" to="/monedas">
           Binance P2P
         </Link>
         <button

@@ -56,7 +56,6 @@ const OrdenesComprador = () => {
       setMensaje("Comprobante subido correctamente.");
       setComprobantes({ ...comprobantes, [transaccionId]: null });
 
-      // Opcional: actualizar la lista
       const res = await api.get("/transacciones/pendientes-comprador");
       setOrdenes(res.data);
     } catch (error) {

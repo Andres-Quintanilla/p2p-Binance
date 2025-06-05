@@ -35,7 +35,6 @@ const Dashboard = () => {
         <div>
           <p>Total de usuarios: {estadisticas.totalUsuarios}</p>
           <p>Total de transacciones: {estadisticas.totalTransacciones}</p>
-          {/* Agrega más estadísticas según sea necesario */}
         </div>
       ) : (
         <p>Cargando estadísticas...</p>

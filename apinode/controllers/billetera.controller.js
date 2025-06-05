@@ -35,7 +35,6 @@ exports.detalle = async (req, res) => {
       ]
     });
 
-    // Si no existe, crearla
     if (!billetera) {
       billetera = await db.billetera.create({
         usuarioId: usuario.id,
@@ -43,7 +42,6 @@ exports.detalle = async (req, res) => {
         saldo: 0
       });
 
-      // Recargar con los includes
       billetera = await db.billetera.findOne({
         where: { id: billetera.id },
         include: [

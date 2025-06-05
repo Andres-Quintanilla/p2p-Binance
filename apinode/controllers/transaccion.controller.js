@@ -281,3 +281,27 @@ exports.finalizar = async (req, res) => {
     res.status(500).send({ message: "Error al finalizar la transacción" });
   }
 };
+
+exports.obtenerTodasVendedor = async (req, res) => {
+  const usuario = res.locals.usuario;
+  try {
+    const ordenes = await db.transaccion.findAll({
+      where: {
+        usuarioVendedorId: usuario.id
+      },
+      include: [
+        { model: db.usuario, as: "usuarioComprador", attributes: ["email"] },
+        {
+          model: db.anuncio,
+          include: [db.moneda],
+        },
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.send(ordenes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error al obtener transacciones del vendedor" });
+  }
+};

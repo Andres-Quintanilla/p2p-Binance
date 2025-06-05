@@ -9,7 +9,7 @@ const OrdenesVendedor = () => {
   useEffect(() => {
     const fetchOrdenes = async () => {
       try {
-        const res = await api.get("/transacciones/pendientes-vendedor");
+        const res = await api.get("/transacciones/vendedor"); //modificado 
         setOrdenes(res.data);
       } catch (error) {
         console.error("Error al cargar órdenes:", error);

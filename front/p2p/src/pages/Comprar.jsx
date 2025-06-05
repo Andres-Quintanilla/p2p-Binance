@@ -31,7 +31,7 @@ const Comprar = () => {
           return;
         }
 
-        const res = await api.post(`/transacciones/vender/${anuncioId}`);
+        const res = await api.post(`/transacciones/comprar/${anuncioId}`); // esto se cambio
         const transaccionId = res.data.id;
 
         const formData = new FormData();

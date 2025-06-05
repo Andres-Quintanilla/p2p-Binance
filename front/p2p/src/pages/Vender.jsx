@@ -1,4 +1,3 @@
-// src/pages/Vender.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api/axios";

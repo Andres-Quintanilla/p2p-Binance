@@ -3,6 +3,7 @@ module.exports = app => {
   const transaccionController = require("../controllers/transaccion.controller");
   const { requireUser } = require("../middlewares/requires-user");
 
+  router.get("/vendedor", requireUser, transaccionController.obtenerTodasVendedor);
   router.put("/:id/confirmar", requireUser, transaccionController.confirmarTransaccion);
   router.put("/:id/cancelar", requireUser, transaccionController.cancelarTransaccion);
   router.put("/:id/comprobante", requireUser, transaccionController.subirComprobante);

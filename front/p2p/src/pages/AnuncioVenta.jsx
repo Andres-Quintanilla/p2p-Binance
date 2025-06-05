@@ -34,7 +34,7 @@ const AnunciosVenta = () => {
               <em>Método de pago: </em>{a.descripcionPago}
               <button
                 className="btn btn-primary btn-sm"
-                onClick={() => navigate(`/vender/${a.id}`)}
+                onClick={() => navigate(`/comprar/${a.id}`)}  // esto se cambio 
               >
                 Comprar
               </button>
